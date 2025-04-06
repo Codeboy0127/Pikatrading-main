@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% block title %} Shop {% endblock %}
+
+{% block content %}
+{% load static %}
+<!-- Header for each product category -->
+
+{% if background_url %}
+<div
+    class="px-6 py-10 lg:py-20 bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('{{ background_url }}')] opacity-80">
+    {% else %}
+    <div
+        class="px-6 py-10 lg:py-20 bg-[linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('{% static 'images/All_Background.jpg' %}')] opacity-80">
+        {% endif %}
+        <div class="max-w-3xl mx-auto text-center">
+            {% if active_category %}
+            <p class="mb-2 text-3xl lg:text-5xl text-white">{{active_category}}</p>
+            {% else %}
+            <p class="mb-2 text-3xl lg:text-5xl text-white">SHOP</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Header end of header for each category -->
+
+    <div class="max-w-6xl mx-auto flex flex-wrap items-start py-6 px-6 xl:px-0">
+        <div class="filters w-full lg:w-1/4">
+            <h3 class="mb-3 text-xl uppercase">Search</h3>
+
+            <form method="get" action=".">
+                <div class="flex">
+                    <input type="text" name="query" class="p-4 bg-gray-100 border-0" placeholder="Search...">
+
+                    <button class="p-4 bg-gray-100 border-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <h3 class="mt-6 mb-3 text-xl uppercase">Categories</h3>
+
+            <ul class="space-y-2">
+                <li><a href="{% url 'shop' %}"
+                        class="{% if not active_category %}text-indigo-500{% else %}text-gray-500{% endif %}">All
+                        categories</a></li>
+                {% for category in categories %}
+                <li><a href="{% url 'shop' %}?category={{ category.slug }}"
+                        class="{% if category.slug == active_category %}text-indigo-500{% else %}text-gray-500{% endif %}">
+                        {{category.name }}</a>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+
+        <div class="products w-full lg:w-3/4 -mt-4 flex items-center flex-wrap">
+            {% for product in products %}
+            {% include 'product/partials/product_list_item.html' %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+{% block title %} Sign Up {% endblock %}
+{% block content %}
+{% load form_tags %}
+<div class="max-w-lg mx-auto flex flex-wrap p-6">
+    <div class="w-full bg-gray-100 p-6 rounded-xl">
+        <h1 class="mb-6 text-2xl text-center">SIGNUP TO PIKA</h1>
+
+        <form method="post" action="{% url 'account_signup' %}" class="space-y-3">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label>User Name</label>
+                {{ form.username|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.username.errors %}
+                <div class="text-red-600">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label>First Name</label>
+                {{ form.first_name|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.first_name.errors %}
+                <div class="text-red-600">{{ form.first_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label>Last Name</label>
+                {{ form.last_name|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.last_name.errors %}
+                <div class="text-red-600">{{ form.last_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label>Email</label>
+                {{ form.email|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.email.errors %}
+                <div class="text-red-600">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label>Password</label>
+                {{ form.password1|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.password1.errors %}
+                <div class="text-red-600">{{ form.password1.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label>Repeat Password</label>
+                {{ form.password2|add_class:"w-full mt-2 py-4 px-6 bg-white rounded-xl" }}
+                {% if form.password2.errors %}
+                <div class="text-red-600">{{ form.password2.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button class="w-full py-4 px-6 mt-4 rounded-xl text-white bg-indigo-500 hover:bg-indigo-700">Sign
+                Up</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

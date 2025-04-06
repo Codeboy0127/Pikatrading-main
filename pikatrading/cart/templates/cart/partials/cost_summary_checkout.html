@@ -1,0 +1,23 @@
+<div id="cost_summary">
+    <div class="mb-1 flex justify-between">
+        <span class="font-semibold">Subtotal</span>
+        <span>฿{{ cart.get_total_cost }}</span>
+    </div>
+    <div class="mb-1 flex justify-between">
+        <span class="font-semibold">Shipping</span>
+        {% if shipping_method == "thailandpost" %}
+        <span>฿{{ shipping_cost }}</span>
+        {% else %}
+        <span>Pay on delivery</span>
+        {% endif %}
+    </div>
+
+    <div class="mb-6 flex justify-between underline">
+        <span class="font-semibold">Total</span>
+        <span>฿{{ total_amount }}</span>
+    </div>
+
+    <button class="inline-block px-4 py-4 rounded-xl bg-indigo-500 hover:bg-indigo-700 text-white">
+        Confirm checkout
+    </button>
+</div>

@@ -1,0 +1,42 @@
+# upstream for uWSGI
+upstream uwsgi_app {
+    server unix:/code/pikatrading/uwsgi_app.sock;
+}
+
+server {
+    listen 80;
+    server_name pikatrading.com www.pikatrading.com;
+    
+    # Required for Let's Encrypt domain verification
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Redirect all HTTP traffic to HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen  443 ssl;
+    server_name pikatrading.com www.pikatrading.com;
+    
+    ssl_certificate /etc/letsencrypt/live/pikatrading.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pikatrading.com/privkey.pem;
+    
+    error_log    stderr warn;
+    access_log   /dev/stdout main;
+
+    location / {
+        include      /etc/nginx/uwsgi_params;
+        uwsgi_pass   uwsgi_app;
+    }
+
+    location /static/ {
+        alias /code/pikatrading/static/;
+    }
+    location /media/ {
+        alias /code/pikatrading/media/;
+    }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white flex items-center justify-center h-screen text-center">
+
+    <section class="max-w-2xl w-full">
+
+        <div class="bg-cover bg-center h-96 w-ful"
+            style="background-image: url('https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif');">
+            <h1 class="text-8xl font-bold">404</h1>
+        </div>
+
+        <div class="mt-[-50px]">
+            <h3 class="text-2xl font-semibold text-gray-800">Looks like you're lost</h3>
+            <p class="text-gray-600 mt-2">The page you are looking for is not available!</p>
+
+            <a href="{% url 'frontpage' %}"
+                class="mt-5 inline-block bg-black text-white px-6 py-2 rounded-lg shadow-md hover:bg-gray-800 transition">
+                Go to Home
+            </a>
+        </div>
+    </section>
+
+</body>
+
+</html>

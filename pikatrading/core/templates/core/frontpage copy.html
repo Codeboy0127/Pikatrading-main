@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+{% block title %} Welcome {% endblock %}
+
+{% block content %}
+<header class="px-6 py-10 lg:py-20 bg-gradient-to-r from-black to-pink-500">
+    <div class="max-w-3xl mx-auto text-center">
+        <p class="mb-2 text-3xl lg:text-5xl text-white">Welcome to Pika Trading</p>
+
+        <p class="mb-10 text-white">The Best Card Trading Site</p>
+
+        <a href="#" class="inline-block px-8 py-4 rounded-xl bg-white text-indigo-500 hover:bg-gray-300">Start
+            shopping</a>
+    </div>
+</header>
+
+
+<div class="w-screen mx-auto py-2 xl:px-0 bg-[#f2f2f2]">
+    <p class="mb-10 text-center text-3xl font-medium py-4">Popular Product</p>
+
+    <div class="flex w-2/3 mx-auto items-center flex-wrap">
+
+        {% for category in categories %}
+        {% include 'product/partials/category_list_item.html' %}
+        {% endfor %}
+
+
+    </div>
+
+
+
+</div>
+
+
+<div class="max-w-6xl mx-auto py-2 px-6 xl:px-0">
+    <div class="products flex items-center flex-wrap">
+
+        {% for product in products %}
+        {% include 'product/partials/product_list_item.html' %}
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}

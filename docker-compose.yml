@@ -1,0 +1,89 @@
+services:
+
+  db:
+    image: postgres:17.0
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    command: ["./wait-for-it.sh", "db:5432", "--",
+            "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"]
+
+    restart: always
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=pikatrading.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      # Add these environment variables for Playwright
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+      # Optional: If you need to run headed browsers
+      - DISPLAY=:99
+      
+    depends_on:
+      - db
+    # Add these capabilities for Playwright
+    cap_add:
+      - SYS_ADMIN
+
+  nginx:
+    image: nginx:1.27.2
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/code
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    command: nginx -g 'daemon off;'
+    depends_on:
+      - certbot
+  
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Add --staging flag to use Let's Encrypt's staging environment
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --staging --deploy-hook \"docker kill -s HUP nginx\"; sleep 12h & wait $${!}; done;'"
+  
+  rabbitmq:
+    restart: always
+    image: rabbitmq:4.0-management
+    volumes:
+      - type: bind
+        source: ./config/rabbitmq/rabbitmq.conf
+        target: /etc/rabbitmq/conf.d/10-defaults.conf
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - "5672"
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+  
+  celery:
+    build: .
+    working_dir: /code/pikatrading
+    command: ["/bin/sh", "-c", "celery -A pikatrading worker -l info --pool=solo & celery -A pikatrading beat --loglevel=info"]
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=pikatrading.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - rabbitmq
+      - web

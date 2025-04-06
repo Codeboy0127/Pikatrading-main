@@ -1,0 +1,194 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+<!-- Display Flash Messages -->
+{% if messages %}
+
+{% for message in messages %}
+{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+{% if forloop.first %} <div class="bg-red-500 text-white p-3 rounded-md mb-4"> {% endif %}
+
+    {{ message }} <br />
+
+
+    {% if forloop.last %} </div>{% endif %}
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+<form class="max-w-6xl mx-auto flex flex-wrap items-start py-6 px-6 xl:px-0" method="post"
+    action="{% url 'checkout' %}">
+    {% csrf_token %}
+    <div class="products w-2/3">
+        <h1 class="mb-5 text-3xl">Checkout</h1>
+
+        <div class="w-full pr-6">
+            <div class="mb-6 p-6 bg-gray-100 rounded-xl">
+                <h2 class="mb-5 uppercase text-lg">Shipping information</h2>
+
+                <div class="flex space-x-6">
+                    <div class="w-1/2 mb-4">
+                        <label class="inline-block mb-2 text-sm font-medium text-gray-600">First name</label>
+                        <input name="first_name" type="text" class="w-full p-5 rounded-xl"
+                            value="{{ request.user.first_name }}">
+                    </div>
+
+                    <div class="w-1/2 mb-4">
+                        <label class="inline-block mb-2 text-sm font-medium text-gray-600">Last name</label>
+                        <input name="last_name" type="text" class="w-full p-5 rounded-xl"
+                            value="{{ request.user.last_name }}">
+
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="inline-block mb-2 text-sm font-medium text-gray-600">Address</label>
+
+                    <input name="address" type="text" class="w-full p-5 rounded-xl">
+
+                </div>
+
+                <div class="flex space-x-6">
+                    <div class="w-1/2 mb-4">
+                        <label class="inline-block mb-2 text-sm font-medium text-gray-600">Zip code</label>
+                        <input name="zipcode" type="text" class="w-full p-5 rounded-xl">
+                    </div>
+
+                    <div class="w-1/2 mb-4">
+                        <label class="inline-block mb-2 text-sm font-medium text-gray-600">City/Place</label>
+                        <input name="place" type="text" class="w-full p-5 rounded-xl">
+                    </div>
+
+                </div>
+                <div class="mb-4">
+                    <div class="relative w-full">
+                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-600 w-full">
+                            Select Shipping Method
+                        </label>
+                        <select id="dropdown" name="shipping" hx-post="{% url 'hx_cost_summary_checkout' %}"
+                            hx-trigger="change" hx-target="#cost_summary" hx-include="[name='shipping']"
+                            class="h-12 border border-gray-300 text-gray-600 text-base rounded-lg block w-full py-2.5 px-4 pr-12 focus:outline-none appearance-none">
+                            <option value="thailandpost">Thailand Post</option>
+                            <option value="messenger">Messenger</option>
+                            <option value="lalamove">Lalamove</option>
+                        </select>
+                        <!-- Custom dropdown arrow -->
+                        <div class="absolute top-[50%] translate-y-1 right-16 flex items-center pointer-events-none">
+                            <!-- Adjusted right-16 -->
+                            <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="mb-6 p-6 bg-gray-100 rounded-xl">
+                <h2 class="mb-5 uppercase text-lg">Billing information</h2>
+                <!-- The check box to check if billing address is the same as shipping address -->
+                <div class="w-1/2 mb-4">
+                    <label>
+                        <input type="checkbox" id="toggleBilling" name="same_as_shipping" value="yes"> Same
+                        As Shipping
+                        information
+                    </label>
+                </div>
+                <div id="billingAddress">
+                    <div class="flex space-x-6">
+                        <div class="w-1/2 mb-4">
+                            <label class="inline-block mb-2 text-sm font-medium text-gray-600">First name</label>
+                            <input name="first_name_billing" type="text" class="w-full p-5 rounded-xl"
+                                value="{{ request.user.first_name }}">
+                        </div>
+
+                        <div class="w-1/2 mb-4">
+                            <label class="inline-block mb-2 text-sm font-medium text-gray-600">Last name</label>
+                            <input name="last_name_billing" type="text" class="w-full p-5 rounded-xl"
+                                value="{{ request.user.last_name }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="inline-block mb-2 text-sm font-medium text-gray-600">Address</label>
+                        <input name="address_billing" type="text" class="w-full p-5 rounded-xl">
+                    </div>
+
+                    <div class="flex space-x-6">
+                        <div class="w-1/2 mb-4">
+                            <label class="inline-block mb-2 text-sm font-medium text-gray-600">Zip code</label>
+                            <input name="zipcode_billing" type="text" class="w-full p-5 rounded-xl">
+                        </div>
+
+                        <div class="w-1/2 mb-4">
+                            <label class="inline-block mb-2 text-sm font-medium text-gray-600">City/Place</label>
+                            <input name="place_billing" type="text" class="w-full p-5 rounded-xl">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mb-6 p-6 bg-gray-100 rounded-xl">
+                <h2 class="mb-5 uppercase text-lg">Contact information</h2>
+
+                <div class="mb-4">
+                    <label class="inline-block mb-2 text-sm font-medium text-gray-600">Email</label>
+                    <input name="email" type="email" class="w-full p-5 rounded-xl" value="{{ request.user.email }}">
+                </div>
+
+                <div class="mb-4">
+                    <label class="inline-block mb-2 text-sm font-medium text-gray-600">Phone</label>
+                    <input name="phone" type="phone" class="w-full p-5 rounded-xl">
+                </div>
+            </div>
+
+            <!--<div class="mb-6 p-6 bg-gray-100 rounded-xl">
+                    <h2 class="mb-5 uppercase text-lg">Payment information</h2>
+                    
+                    <div class="mb-4">
+                        <input name="payment_method" type="radio" value = "creditcard">
+                        <label class="inline-block mb-2">Credit Card</label><br>
+                        <input name="payment_method" type="radio" value = "qrcode">
+                        <label class="inline-block mb-2">QR Code</label>
+                    </div>
+
+                </div> -->
+        </div>
+    </div>
+
+    <div class="summary w-1/3 p-6 bg-gray-100 rounded-xl mt-3 sticky top-4">
+        <h2 class="uppercase text-lg mb-5 font-semibold">Summary</h2>
+        <h2 class="mb-5 uppercase text-lg">Payment information</h2>
+
+        <div class="mb-4">
+            <input name="payment_method" type="radio" value="creditcard" id="select_creditcard">
+            <label class="inline-block mb-2 text-sm font-medium text-gray-600">VISA / MASTERCARD</label><br>
+            <input name="payment_method" type="radio" value="creditcard-jut">
+            <label class="inline-block mb-2 text-sm font-medium text-gray-600">JCB / UNION PAY / TPN</label><br>
+            <input name="payment_method" type="radio" value="qr">
+            <label class="inline-block mb-2 text-sm font-medium text-gray-600">Thai QR Code</label><br>
+            <input name="payment_method" type="radio" value="wechat">
+            <label class="inline-block mb-2 text-sm font-medium text-gray-600">WeChat Pay</label><br>
+            <input name="payment_method" type="radio" value="alipay">
+            <label class="inline-block mb-2 text-sm font-medium text-gray-600">Alipay</label>
+        </div>
+        {% include 'cart/partials/cost_summary_checkout.html' %}
+
+    </div>
+</form>
+
+<script>
+    document.getElementById("toggleBilling").addEventListener("change", function () {
+        document.getElementById("billingAddress").classList.toggle("hidden", this.checked);
+    });
+</script>
+
+{% endblock %}

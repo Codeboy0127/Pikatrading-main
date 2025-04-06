@@ -1,0 +1,36 @@
+{% extends "admin/login.html" %}
+{% load i18n static %}
+{% load static %}
+
+{% block title %}{% trans 'Log in' %}{% endblock %}
+
+{% block content %}
+<div id="content" class="colM">
+    {% comment "keep" %}
+    <h1>{% trans 'Log in' %}</h1>
+    <p>{% trans 'Please enter your username and password.' %}</p>
+
+
+    <img src="{% static 'images/cat_olo.png' %}" alt="Cat Kung">
+    {% endcomment %}
+    <img src="{% static 'images/pika_olo.gif' %}" alt="Cat Kung"
+        style="width:90%;height:50%;padding-bottom:1%;position:relative;">
+
+    <form method="post" id="login-form" action="">
+        {% csrf_token %}
+        <div class="form-row">
+            {{ form.username.errors }}
+            <label for="id_username">{% trans 'Username:' %}</label>
+            {{ form.username }}
+        </div>
+        <div class="form-row">
+            {{ form.password.errors }}
+            <label for="id_password">{% trans 'Password:' %}</label>
+            {{ form.password }}
+        </div>
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Log in' %}">
+        </div>
+    </form>
+</div>
+{% endblock %}

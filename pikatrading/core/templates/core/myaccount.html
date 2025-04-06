@@ -1,0 +1,156 @@
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+</head>
+{% extends 'core/base.html' %}
+
+{% block title %}My account{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class="max-w-6xl mx-auto p-6">
+    <h1 class="mb-5 text-3xl">My account</h1>
+
+    <div class="mb-6">
+        <strong>Name: </strong>{{ request.user.get_full_name }}<br>
+        <strong>Username: </strong>{{ request.user.username }}<br>
+        <strong>E-mail: </strong>{{ request.user.email }}<br>
+        <a href="{% url 'edit_myaccount' %}"
+            class="inline-block mt-4 py-4 px-6 rounded-xl text-white bg-indigo-500">Edit</a>
+    </div>
+
+    <hr>
+
+    <h2 class="my-6 text-xl">My orders</h2>
+    <div class="space-y-4">
+        {% for order in page_order %}
+        <div
+            class="order-container bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out hover:shadow-lg">
+            <div class="flex justify-between items-center p-4 cursor-pointer"
+                onclick="toggleOrderDetails({{ order.id }})">
+                <div class="flex items-center">
+
+                    <span class="text-blue-500 mr-3">
+                        <img src="{% static 'images/box.png' %}" alt="account" class="w-7 h-7"></span>
+                    <div>
+                        <p class="font-semibold text-gray-800"><a
+                                href="{% url 'order_detail' order_id=order.id %}">#{{order.order_id }}</a></p>
+                        <p class="text-sm text-gray-600">{{ order.created_at}}</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold mr-2">
+                        {{ order.status|upper }}
+                    </span>
+
+                    <!-- Up Chevron -->
+                    <i id="chevron-up-{{ order.id }}" class="fa-solid fa-chevron-up text-gray-500 hidden"></i>
+
+                    <!-- Down Chevron -->
+                    <i id="chevron-down-{{ order.id }}" class="fa-solid fa-chevron-down text-gray-500"></i>
+                </div>
+            </div>
+
+            <div id="order-details-{{ order.id }}" class="order-details p-4 bg-gray-50 border-t border-gray-200 hidden">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-600">
+                            <th class="pb-2">Product</th>
+                            <th class="pb-2">Price</th>
+                            <th class="pb-2">Quantity</th>
+                            <th class="pb-2">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr class="border-b border-gray-200 last:border-b-0">
+                            <td class="py-2"><a href="{% url 'product' item.product.slug %}">{{ item.product.name }}</a>
+                            </td>
+                            <td class="py-2">฿{{ item.price }}</td>
+                            <td class="py-2">{{ item.quantity }}</td>
+                            <td class="py-2">฿{{ item.total_amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-semibold text-gray-800">
+                            <td colSpan="3" class="pt-2 text-right">Shipping:</td>
+                            {% if order.shipping_method == "thailandpost" %}
+                            <td class="pt-2">฿{{ order.shipping_cost}}</td>
+                            {% else %}
+                            <td class="pt-2">Pay on delivery</td>
+                            {% endif %}
+                        </tr>
+                        <tr class="font-semibold text-gray-800 underline">
+                            <td colSpan="3" class="pt-2 text-right">Total:</td>
+                            <td class="pt-2">฿{{ order.total_amount}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+        {% endfor %}
+        <!-- Pagination controls -->
+        <div class="flex flex-col items-center mt-4">
+            <!-- Pagination Items -->
+            <div class="flex space-x-2">
+                {% if page_order.has_previous %}
+                <a href="?page=1" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg">First</a>
+                <a href="?page={{ page_order.previous_page_number }}"
+                    class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg">
+                    &lt; </a>
+                {% endif %}
+
+                {% for num in page_order.paginator.page_range %}
+                {% if page_order.number == num %}
+                <span class="px-3 py-2 bg-indigo-500 text-white font-semibold rounded-lg">{{ num }}</span>
+                {% else %}
+                <a href="?page={{ num }}"
+                    class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">{{num}}</a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_order.has_next %}
+                <a href="?page={{ page_order.next_page_number }}"
+                    class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg">&gt;</a>
+                <a href="?page={{ page_order.paginator.num_pages }}"
+                    class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg">Last</a>
+                {% endif %}
+            </div>
+            <!-- Current Page Info -->
+            <p class="mt-2 text-gray-600">
+                Page {{ page_order.number }} of {{ page_order.paginator.num_pages }}
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+
+        function toggleOrderDetails(orderId) {
+            const orderDetails = document.getElementById('order-details-' + orderId);
+            const chevronUp = document.getElementById('chevron-up-' + orderId);
+            const chevronDown = document.getElementById('chevron-down-' + orderId);
+
+            // Toggle visibility of the order details
+            if (orderDetails.classList.contains('hidden')) {
+                orderDetails.classList.remove('hidden');
+                // Change chevron direction
+                chevronUp.classList.remove('hidden');
+                chevronDown.classList.add('hidden');
+            } else {
+                orderDetails.classList.add('hidden');
+                // Change chevron direction
+                chevronUp.classList.add('hidden');
+                chevronDown.classList.remove('hidden');
+            }
+
+
+
+        }
+
+
+    </script>
+    {% endblock %}

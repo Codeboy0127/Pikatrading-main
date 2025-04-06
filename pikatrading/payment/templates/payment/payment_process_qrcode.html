@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+{% load humanize %}
+{% load static %}
+<div class="mt-16 flex flex-col items-center mb-40">
+    <img src="{% static 'images/kbank_gateway_excellent.png' %}" alt="account" class="mt-4 h-[10%] w-[10%]">
+    <!-- <img src="https://assets.codepen.io/6060109/food-happy.png" alt="payment" class="w-40 h-40"> -->
+
+    <P class="mt-6 text-lg font-bold">You will be charged: {{ total_amount }} THB </P>
+    <P class="text-lg font-normal">Your order is not complete yet. Please stay on this page !</P>
+    <form method="post" action="{% url 'payment_result_qr'%}" class="pl-20 button">
+        {% csrf_token %}
+
+        <input name="total_amount" type="text" value="{{ total_amount }}" readonly class="invisible"><br>
+
+        <script type="text/javascript" src="{{KBANK_EMBEBED_URL}}" data-apikey="{{KBANK_PKEY}}"
+            data-amount="{{ total_amount }}" data-payment-methods="{{payment_method}}" data-order-id="{{payment_id}}">
+            </script>
+
+    </form>
+</div>
+
+<div class=" w-full bg-[#00A952] text-white text-center text-sm py-2 flex items-center justify-center">
+    <img src="{% static 'images/kbank_banner_1.png' %}" alt="account" class="h-[10%] w-[10%]">
+    <img src="{% static 'images/kbank_banner_2.png' %}" alt="account" class="h-[10%] w-[10%]">
+
+</div>
+
+<script>
+    window.onload = function () {
+        // Select the first button inside the form and trigger the click event
+        const button = document.querySelector('.button button');
+
+        // Trigger the click event on the button
+        button.click();
+    };
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% load product_tags %}
+<div class="w-full md:w-1/3 xl:w-1/4 p-6">
+    <a href="{% url 'product' product.slug %}">
+        <img src="{{ product.get_thumbnail }}" class="rounded-xl hover:shadow-lg">
+    </a>
+
+    <div class="pt-3 flex items-center justify-between">
+        <a href="{% url 'product' product.slug %}">{{ product.name }}</a>
+        <input type="hidden" id="quantity-input-{{product.id}}" name="quantity"
+            value="{% get_quantity product.id user.id %}" min="{% get_quantity product.id user.id %}">
+
+        {% if product.stock > 0 %}
+        {% if user.is_authenticated %}
+        {% if product.stock < product.id|get_min_quantity:user.id %} <a class="text-gray-500 hover:text-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            </a>
+            {% else %} <a href="#" hx-get="{% url 'add_to_cart' product.id %}?quantity="
+                hx-include="#quantity-input-{{product.id}}" hx-target="#menu-cart-button" hx-swap="outerHTML"
+                class="text-indigo-500 hover:text-indigo-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </a>
+
+            {% endif %}
+
+            {% else %}
+
+            <a href="{% url 'account_login' %}" class="text-indigo-500 hover:text-indigo-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </a>
+
+            {% endif %}
+            {% else %}
+            <span class="mt-1 text-red-400">Out of stock</span>
+
+            {% endif %}
+
+
+    </div>
+
+    <p class="pt-1 text-gray-400">{% get_price product.id user.id %}</p>
+</div>

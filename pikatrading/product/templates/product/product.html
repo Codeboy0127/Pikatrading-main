@@ -1,0 +1,113 @@
+{% extends 'core/base.html' %}
+{% block title %} {{product.name}} {% endblock %}
+{% load product_tags %}
+{% block content %}
+
+
+
+
+<div class="max-w-6xl mx-auto flex flex-wrap py-6 px-6 xl:px-0">
+    <div class="images w-full mb-6 lg:mb-0 lg:w-3/5">
+
+        <img class="rounded-xl"
+            src="{% if product.image %}{{ product.image.url }}{% else %}https://s3.amazonaws.com/s3.myslabs.com/media/68f5bc6b-1c05-4b5c-8206-c85a007bc979/2023/08/17/YNKECJF_1692281346_1.png{% endif %}">
+
+    </div>
+
+    <div class="information w-full lg:w-2/5 lg:p-6">
+        <h1 class="text-2xl">{{ product.name }}</h1>
+
+        <p class="mt-1 text-gray-400">{% get_price product.id user.id %}</p>
+
+        {% if product.stock > 0 %}
+        <span class="mt-1 text-green-400">Available now</span>
+        {% else %}
+        <span class="mt-1 text-red-400">Out of stock</span>
+        {% endif %}
+
+
+        <div class="quantity mt-6 flex items-center">
+            <a href="#" class="p-3 border border-gray-300 rounded-l-lg text-sm" onclick="decrementQuantity()">
+                -
+            </a>
+            <input type="number" id="quantity-input" name="quantity" value="{% get_quantity product.id user.id %}"
+                data-stock="{{ product.stock }}" min="{% get_quantity product.id user.id %}"
+                class="w-16 p-3 bg-white text-center border-y border-gray-300 text-sm
+                focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+                [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                onchange="if(this.value<parseInt(min)) this.value=parseInt(min);">
+            <a href="#" class="p-3 border border-gray-300 rounded-r-lg text-sm" onclick="incrementQuantity()">
+                +
+            </a>
+        </div>
+
+        {% if product.description %}
+        <p class="mt-6 text-gray-700">
+            {{ product.description }}
+        </p>
+        {% endif %}
+
+        {% if product.stock > 0 %}
+        {% if user.is_authenticated %}
+        <button id="add-to-cart-button"
+            class="mt-6 inline-block px-8 py-4 rounded-xl bg-indigo-500 text-white hover:bg-indigo-700"
+            hx-get="{% url 'add_to_cart' product.id %}?quantity=" hx-include="#quantity-input"
+            hx-target="#menu-cart-button" hx-swap="outerHTML">
+            Add to cart
+        </button>
+
+        {% else %}
+        <a href="{% url 'account_login' %}"
+            class="mt-6 inline-block px-8 py-4 rounded-xl bg-indigo-500 text-white hover:bg-indigo-700">
+            Add to cart
+        </a>
+
+        {% endif %}
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function incrementQuantity() {
+        var quantityInput = document.getElementById('quantity-input');
+        var currentValue = parseInt(quantityInput.value);
+        var maxStock = parseInt(quantityInput.getAttribute('data-stock'));
+        if (currentValue < maxStock) {
+            quantityInput.value = currentValue + 1;
+        }
+        toggleAddToCartButton();
+    }
+
+    function decrementQuantity() {
+        var quantityInput = document.getElementById('quantity-input');
+        var currentValue = parseInt(quantityInput.value);
+        if (currentValue > parseInt(quantityInput.min)) {
+            quantityInput.value = currentValue - 1;
+        }
+        toggleAddToCartButton();
+    }
+
+    function toggleAddToCartButton() {
+        var quantityInput = document.getElementById('quantity-input');
+        var addToCartButton = document.getElementById('add-to-cart-button');
+        var currentValue = parseInt(quantityInput.value);
+        var maxStock = parseInt(quantityInput.getAttribute('data-stock'));
+        if (currentValue > maxStock || currentValue < 1) {
+            addToCartButton.disabled = true;
+            addToCartButton.classList.add('bg-gray-500', 'cursor-not-allowed');
+            addToCartButton.classList.remove('bg-indigo-500', 'hover:bg-indigo-700');
+        } else {
+            addToCartButton.disabled = false;
+            addToCartButton.classList.remove('bg-gray-500', 'cursor-not-allowed');
+            addToCartButton.classList.add('bg-indigo-500', 'hover:bg-indigo-700');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleAddToCartButton();
+    });
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+
+<div class="mt-8 flex flex-col items-center">
+    <img src="https://static.vecteezy.com/system/resources/previews/002/514/376/original/cute-cat-in-the-box-cartoon-funny-cat-play-with-box-cat-cartoon-illustration-vector.jpg"
+        alt="thankyou" class="w-48 h-48 rounded-full">
+
+    <h1 class="text-4xl font-bold mt-2">Thank you for your order! </h1>
+    <p class="text-xl font-normal mt-6"> Your payment has been processing. You will get notify via email once the
+        payment is
+        complete </p>
+    <p class="text-xl font-normal mt-2">Your order will be delivered in 2-3 working days!</p>
+    <div class="flex space-x-2 mt-6 mb-40">
+        <a href="/" class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800">Go Home</a>
+        <a href="/shop" class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800">Continue Shopping</a>
+    </div>
+</div>
+
+
+{% endblock %}

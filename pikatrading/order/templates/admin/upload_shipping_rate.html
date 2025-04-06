@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Upload Shipping Rate{% endblock %}
+
+{% block content %}
+<h2>Upload Shipping Rates via CSV</h2>
+{% if success %}
+<p style="color: green;">CSV file uploaded successfully!</p>
+{% endif %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>{{ form.as_p }}</p>
+    <button type="submit">Upload</button>
+</form>
+<br>
+<a href="{% url 'admin:index' %}">Back to Admin</a>
+{% endblock %}

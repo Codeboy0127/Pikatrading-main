@@ -1,0 +1,62 @@
+{% load product_tags %}
+{% if item %}
+<div class="product mb-6 flex pr-6" id="cart-item-{{ item.product.id }}">
+    <a href="#" class="w-1/4">
+        <img class="hover:shadow-lg rounded-xl" src="{{ item.product.get_thumbnail }}">
+    </a>
+
+    <div class="w-3/4 pl-6">
+        <div class="flex justify-between">
+            <a href="#" class="text-lg">{{ item.product.name }}</a>
+
+            <span class="mb-6 pt-1 text-gray-400">฿{{ item.total_price }}</span>
+        </div>
+
+        <hr>
+        <div class="flex justify-between">
+            <div class="quantity mt-6 flex items-center space-x-4">
+                {% with min_quantity=item.product.id|get_min_quantity:user.id %}
+
+
+                {% if item.quantity <= min_quantity %} <a class="p-3 bg-gray-100">
+                    -
+                    </a>
+                    {% else %}
+                    <a href="#" class="p-3 bg-gray-100" hx-get="{% url 'update_cart' item.product.id 'decrement' %}"
+                        hx-target="#cart-item-{{ item.product.id }}" hx-vals='{"quantity": "{{ item.quantity }}"}'
+                        hx-swap="outerHTML">
+                        -
+                    </a>
+                    {% endif %}
+
+                    <span id="quantity-input" name="quantity">{{ item.quantity }}</span>
+
+                    {% if item.quantity >= item.product.stock %}
+                    <a class="p-3 bg-gray-100">
+                        +
+                    </a>
+                    {% else %}
+                    <a href="#" class="p-3 bg-gray-100" hx-get="{% url 'update_cart' item.product.id 'increment' %}"
+                        hx-target="#cart-item-{{ item.product.id }}" hx-vals='{"quantity": "{{ item.quantity }}"}'
+                        hx-swap="outerHTML">
+                        +
+                    </a>
+                    {% endif %}
+                    {% endwith %}
+            </div>
+
+            <a href="#" class="mt-6 text-gray-500 hover:text-gray-800"
+                hx-get="{% url 'update_cart' item.product.id 'remove' %}" hx-target="#cart-item-{{ item.product.id }}"
+                hx-swap="outerHTML">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    class="h-6 w-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                        d="M8 3H16V5H20V7H4V5H8V3ZM6 7H18V19C18 20.1 17.1 21 16 21H8C6.9 21 6 20.1 6 19V7ZM10 10V17M14 10V17" />
+                </svg>
+            </a>
+        </div>
+
+
+    </div>
+</div>
+{% endif %}

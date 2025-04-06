@@ -1,0 +1,7 @@
+celery -A pikatrading worker -l info --pool=solo
+
+.venv\Scripts\activate
+
+ngrok http --domain=corgi-hip-honestly.ngrok-free.app 8000
+
+https://corgi-hip-honestly.ngrok-free.app/

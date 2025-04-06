@@ -1,0 +1,3 @@
+supervisorctl restart projectname
+
+source env/bin/activate
