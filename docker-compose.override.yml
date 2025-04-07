@@ -1,0 +1,6 @@
+version: '3'
+services:
+  nginx:
+    volumes:
+      - ./config/nginx/dev.conf:/etc/nginx/conf.d/default.conf  # overrides the generated one
+    entrypoint: nginx -g 'daemon off;'  # disables template processing
