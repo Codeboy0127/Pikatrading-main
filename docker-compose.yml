@@ -17,6 +17,7 @@ services:
     restart: always
     volumes:
       - .:/code
+      - ./uwsgi_app.sock:/code/pikatrading/uwsgi_app.sock   # Mount socket here
     environment:
       - DJANGO_SETTINGS_MODULE=pikatrading.settings.prod
       - POSTGRES_DB=postgres
@@ -41,10 +42,11 @@ services:
       - .:/code
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - ./uwsgi_app.sock:/code/pikatrading/uwsgi_app.sock  # Mount socket here as well
     ports:
       - "80:80"
       - "443:443"
-    command: nginx -g 'daemon off;'
+    command: ["nginx", "-g", "daemon off;"]
     depends_on:
       - certbot
   
