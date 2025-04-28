@@ -11,7 +11,6 @@ def handle_existing_user_email(sender, request, sociallogin, **kwargs):
     # Get the email associated with the social login
     email = sociallogin.account.extra_data.get('email')
 
-    # Check if the email exists in the database
     try:
         existing_user = User.objects.get(email=email)
     except User.DoesNotExist:

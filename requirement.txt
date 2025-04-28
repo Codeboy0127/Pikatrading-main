@@ -28,7 +28,6 @@ urllib3==2.1.0
 vine==5.1.0
 wcwidth==0.2.12
 wheel==0.44.0
-uwsgi
 django-allauth
 django-allauth[socialaccount]
 WeasyPrint==64.0 
