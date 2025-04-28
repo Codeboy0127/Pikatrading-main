@@ -1,3 +1,3 @@
 "# sample-code" 
 
-Django(Python) project
+Django project
